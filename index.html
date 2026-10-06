@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanKicks - Layanan Cuci Sepatu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section id="login" data-testid="login-page">
+  <h1 class="logo"><svg class="logo-icon" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1f4d"/><path d="M6 20c0-4 3-7 7-6l4 2c2 1 4 .5 6-1 3-2 5 1 5 5z" fill="#fff"/><rect x="5" y="19" width="22" height="4" rx="2" fill="#8fa3d1"/><path d="M24 6l1 2.2 2.2 1-2.2 1L24 12.4l-1-2.2-2.2-1 2.2-1z" fill="#fff"/></svg>CleanKicks</h1>
+  <p>Masuk untuk mengelola pesanan cuci sepatu.</p>
+  <label for="username">Username</label>
+  <input id="username" data-testid="username" autocomplete="username">
+  <label for="password">Password</label>
+  <div class="pw">
+    <input id="password" type="password" data-testid="password" autocomplete="current-password">
+    <button type="button" id="toggle-pw" data-testid="toggle-password" aria-label="Tampilkan password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg></button>
+  </div>
+  <div class="error" id="login-error" data-testid="login-error" role="alert"></div>
+  <button class="btn" id="login-btn" data-testid="login-button">Masuk</button>
+</section>
+
+<section id="app" class="hidden" data-testid="app-page">
+  <nav>
+    <span class="brand"><svg class="logo-icon" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1f4d"/><path d="M6 20c0-4 3-7 7-6l4 2c2 1 4 .5 6-1 3-2 5 1 5 5z" fill="#fff"/><rect x="5" y="19" width="22" height="4" rx="2" fill="#8fa3d1"/><path d="M24 6l1 2.2 2.2 1-2.2 1L24 12.4l-1-2.2-2.2-1 2.2-1z" fill="#fff"/></svg>CleanKicks</span>
+    <button data-page="home" data-testid="nav-home" class="active">Beranda</button>
+    <button data-page="order" data-testid="nav-order">Pesanan Baru</button>
+    <button data-page="list" data-testid="nav-list">Daftar Pesanan</button>
+    <button data-page="price" data-testid="nav-price">Harga</button>
+    <button id="logout-btn" data-testid="logout-button">Keluar</button>
+  </nav>
+  <main>
+    <div id="page-home" data-testid="page-home">
+      <div class="hero">
+        <h2 data-testid="welcome">Halo, Admin</h2>
+        <p>Sepatu kotor jadi bersih lagi. Yuk cek pesanan hari ini.</p>
+      </div>
+      <div class="stats">
+        <div class="stat c1"><span>Total pesanan</span><strong data-testid="stat-total">0</strong></div>
+        <div class="stat c2"><span>Sedang dicuci</span><strong data-testid="stat-process">0</strong></div>
+        <div class="stat c3"><span>Selesai</span><strong data-testid="stat-done">0</strong></div>
+      </div>
+    </div>
+
+    <div id="page-order" class="hidden" data-testid="page-order">
+      <div class="panel">
+        <h2>Pesanan baru</h2>
+        <label for="customer">Nama pelanggan</label>
+        <input id="customer" data-testid="input-customer">
+        <label for="shoe-type">Jenis sepatu</label>
+        <input id="shoe-type" data-testid="input-shoe" placeholder="Contoh: Sneakers putih">
+        <label for="service">Layanan</label>
+        <select id="service" data-testid="select-service"></select>
+        <div class="error" id="order-error" data-testid="order-error" role="alert"></div>
+        <button class="btn" id="save-order" data-testid="save-order">Simpan pesanan</button>
+        <div class="toast" id="order-toast" data-testid="order-toast"></div>
+      </div>
+    </div>
+
+    <div id="page-list" class="hidden" data-testid="page-list">
+      <div class="panel">
+        <h2>Daftar pesanan</h2>
+        <p id="empty" data-testid="empty-state">Belum ada pesanan. Buat pesanan pertama di menu Pesanan Baru.</p>
+        <table id="order-table" class="hidden"><thead><tr><th>Pelanggan</th><th>Sepatu</th><th>Layanan</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="order-body" data-testid="order-body"></tbody></table>
+      </div>
+    </div>
+
+    <div id="page-price" class="hidden" data-testid="page-price">
+      <h2>Daftar harga</h2>
+      <div class="cards" id="price-body"></div>
+    </div>
+  </main>
+</section>
+
+<script>
+const USER = { username: 'admin', password: 'password123' };
+const SERVICES = [
+  { name: 'Cuci Basic', price: 25000, img: 'images/cuci-basic.jpg' },
+  { name: 'Cuci Deep Clean', price: 45000, img: 'images/deep-clean.jpg' },
+  { name: 'Unyellowing Sol', price: 60000, img: 'images/unyellowing.jpg' }
+];
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp' + n.toLocaleString('id-ID');
+const store = {
+  get orders() { try { return JSON.parse(localStorage.getItem('orders')) || []; } catch { return []; } },
+  set orders(v) { localStorage.setItem('orders', JSON.stringify(v)); }
+};
+
+function showApp(on) {
+  $('login').classList.toggle('hidden', on);
+  $('app').classList.toggle('hidden', !on);
+}
+function login() {
+  const u = $('username').value.trim(), p = $('password').value;
+  if (!u || !p) { $('login-error').textContent = 'Username dan password wajib diisi.'; return; }
+  if (u !== USER.username || p !== USER.password) { $('login-error').textContent = 'Username atau password salah.'; return; }
+  sessionStorage.setItem('loggedIn', '1');
+  $('login-error').textContent = '';
+  showApp(true); go('home');
+}
+function logout() { sessionStorage.removeItem('loggedIn'); $('password').value = ''; $('password').type = 'password'; $('toggle-pw').classList.remove('on'); showApp(false); }
+
+function go(page) {
+  ['home', 'order', 'list', 'price'].forEach(p => $('page-' + p).classList.toggle('hidden', p !== page));
+  document.querySelectorAll('nav [data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  render();
+}
+function render() {
+  const o = store.orders;
+  document.querySelector('[data-testid="stat-total"]').textContent = o.length;
+  document.querySelector('[data-testid="stat-process"]').textContent = o.filter(x => x.status === 'Dicuci').length;
+  document.querySelector('[data-testid="stat-done"]').textContent = o.filter(x => x.status === 'Selesai').length;
+  $('empty').classList.toggle('hidden', o.length > 0);
+  $('order-table').classList.toggle('hidden', o.length === 0);
+  $('order-body').innerHTML = o.map((x, i) => `<tr data-testid="order-row">
+    <td>${esc(x.customer)}</td><td>${esc(x.shoe)}</td><td>${esc(x.service)}</td>
+    <td><span class="badge" data-testid="order-status">${x.status}</span></td>
+    <td>${x.status === 'Dicuci' ? `<button class="btn sm" data-done="${i}" data-testid="done-btn">Tandai selesai</button> ` : ''}<button class="btn alt sm" data-del="${i}" data-testid="delete-btn">Hapus</button></td></tr>`).join('');
+}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function saveOrder() {
+  const customer = $('customer').value.trim(), shoe = $('shoe-type').value.trim(), service = $('service').value;
+  $('order-toast').textContent = '';
+  if (!customer || !shoe) { $('order-error').textContent = 'Nama pelanggan dan jenis sepatu wajib diisi.'; return; }
+  $('order-error').textContent = '';
+  store.orders = [...store.orders, { customer, shoe, service, status: 'Dicuci' }];
+  $('customer').value = ''; $('shoe-type').value = '';
+  $('order-toast').textContent = 'Pesanan tersimpan.';
+  render();
+}
+
+$('service').innerHTML = SERVICES.map(s => `<option>${s.name}</option>`).join('');
+const DESCS = ['Bersih harian untuk upper dan sol.', 'Sampai ke sela-sela dan insole.', 'Sol kuning kembali putih.'];
+$('price-body').innerHTML = SERVICES.map((s, i) => `<div class="card"><div class="tile"><img src="${s.img}" alt="${s.name}"></div><h3>${s.name}</h3><p>${DESCS[i]}</p><div class="cost">${rupiah(s.price)}</div></div>`).join('');
+$('login-btn').onclick = login;
+$('password').onkeydown = e => { if (e.key === 'Enter') login(); };
+$('logout-btn').onclick = logout;
+$('toggle-pw').onclick = () => {
+  const show = $('password').type === 'password';
+  $('password').type = show ? 'text' : 'password';
+  $('toggle-pw').classList.toggle('on', show);
+  $('toggle-pw').setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+};
+$('save-order').onclick = saveOrder;
+document.querySelectorAll('nav [data-page]').forEach(b => b.onclick = () => go(b.dataset.page));
+$('order-body').onclick = e => {
+  const o = store.orders;
+  if (e.target.dataset.done) { o[+e.target.dataset.done].status = 'Selesai'; store.orders = o; render(); }
+  if (e.target.dataset.del) { o.splice(+e.target.dataset.del, 1); store.orders = o; render(); }
+};
+if (sessionStorage.getItem('loggedIn')) { showApp(true); go('home'); }
+</script>
+</body>
+</html>
