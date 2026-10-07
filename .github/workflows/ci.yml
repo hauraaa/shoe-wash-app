@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  cek-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode dari repo
+        uses: actions/checkout@v4
+
+      - name: Cek file penting ada
+        run: |
+          test -f index.html
+          test -f style.css
+          test -d images
+          echo "Semua file penting ada"
