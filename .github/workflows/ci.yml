@@ -18,6 +18,9 @@ jobs:
           test -f style.css
           test -d images
           echo "Semua file penting ada"
-          
+
       - name: Cek HTML dengan HTMLHint
         run: npx --yes htmlhint index.html
+  
+      - name: Cek CSS dengan Stylelint
+        run: npx --yes stylelint style.css
