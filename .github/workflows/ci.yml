@@ -17,10 +17,42 @@ jobs:
           test -f index.html
           test -f style.css
           test -d images
-          echo "Semua file penting ada"
 
       - name: Cek HTML dengan HTMLHint
         run: npx --yes htmlhint index.html
-  
+
       - name: Cek CSS dengan Stylelint
         run: npx --yes stylelint style.css
+
+  deploy:
+    needs: cek-file
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Ambil kode dari repo
+        uses: actions/checkout@v4
+
+      - name: Siapkan file yang mau ditayangkan
+        run: |
+          mkdir dist
+          cp index.html style.css dist/
+          cp -r images dist/
+
+      - name: Atur Pages
+        uses: actions/configure-pages@v6
+
+      - name: Bungkus file jadi paket
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+      - name: Kirim ke GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
