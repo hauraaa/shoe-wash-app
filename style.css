@@ -46,7 +46,7 @@ label {
 
 input, select {
   width: 100%;
-  pading: .7rem 1rem;
+  padding: .7rem 1rem;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--bg);
