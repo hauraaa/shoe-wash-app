@@ -1,7 +1,32 @@
-# Shoe Wash App
+# CleanKicks
+
 Web sederhana layanan cuci sepatu (login, pesanan, daftar harga) untuk latihan QA dan CI/CD.
 
-Login menggunakan akun demo berikut:
+🔗 **Demo:** https://hauraaa.github.io/shoe-wash-app/
 
-- username : `admin`
-- password : `password123`
+## Tampilan
+
+![Login](images/screenshots/login.png)
+![Beranda](images/screenshots/beranda.png)
+![Harga](images/screenshots/harga.png)
+
+## Fitur
+
+- Login dengan validasi dan tombol tampilkan/sembunyikan password
+- Buat pesanan baru
+- Daftar pesanan: tandai selesai dan hapus
+- Daftar harga layanan
+
+## Teknologi
+
+HTML, CSS, JavaScript (data disimpan di localStorage browser)
+
+## Akun demo
+
+- Username: `admin`
+- Password: `password123`
+
+## Cara menjalankan
+
+1. Unduh atau clone repo ini
+2. Buka `index.html` di browser
