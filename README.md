@@ -17,11 +17,7 @@ Web sederhana layanan cuci sepatu (login, pesanan, daftar harga) untuk latihan Q
 - Daftar pesanan: tandai selesai dan hapus
 - Daftar harga layanan
 
-## Teknologi
-
-HTML, CSS, JavaScript (data disimpan di localStorage browser)
-
-## Akun demo
+## Akun Demo Apps
 
 - Username: `admin`
 - Password: `password123`
